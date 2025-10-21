@@ -1,16 +1,61 @@
-conda activate 3.11
-conda install anaconda::medspacy_quickumls
-python -m spacy download en_core_web_sm
+INSTALL IN THIS DIRECTORY:
+1> git clone git@github.com:Georgetown-IR-Lab/QuickUMLS.git
+   Guide: https://github.com/Georgetown-IR-Lab/QuickUMLS?tab=readme-ov-file
+2> cd QuickUMLS
+3. Get a license from NLM at https://uts.nlm.nih.gov/license.html
+4. Download all UMLS files from
+   https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html
+5. Install UMLS using the MetamorphoSys tool:
+   https://www.nlm.nih.gov/pubs/factsheets/umlsmetamorph.html
+   Guide:
+   https://www.nlm.nih.gov/research/umls/implementation_resources/metamorphosys/help.html
+6> conda activate 3.11
+7> conda install anaconda::medspacy_quickumls
+8> python -m spacy download en_core_web_sm
+9. Install leveldb on your system, which has different installation requirements
+   for each OS. I had success on MacOS by installing it via Homebrew and then running:
+      > pip install leveldb-py
+10> pip install quickumls-simstring
+11> python -m quickumls.install 2025AA/META QuickUMLS.db
+12> cd ..
 
-python -m quickumls.server /path/to/quickumls/files
 
-http://localhost/umls.html
+INITIALIZE SERVER:
+1> cd QuickUMLS
+2> python -m quickumls.server QuickUMLS.db &
+3> cd ..
+4> python server.py &
+The server will be started on port 8081.
 
 
-Need to convert curly quotes into normal quotes!
+USING THE SERVER:
+1. Change your localhost to your IP/server in the following JavaScript.
+2. Change $('#text').val() to your input string.
+3. Change // PROCESS YOUR DATA HERE to use the JSON.
+
+    function fetchJSON() {
+      $('#result').html('');
+      const json = JSON.stringify({ text: $('#text').val() });
+      console.log(json);
+      fetch("http://localhost:8081", {method:'POST', headers:{
+          'content-type': 'application/json',
+          'Content-Length': json.length
+        },
+        'body': json
+      })
+        .then(response => response.json())
+        .then(data => {
+             console.log(JSON.stringify(data));
+             // PROCESS YOUR DATA HERE
+        })
+        .catch(error => console.error(error));
+    }
 
 
-To get rid of acronyms, use OpenAI with the following phrase as a pre-screen:
+
+NOTES:
+- Need to convert curly quotes into normal quotes!
+- To get rid of acronyms, use OpenAI with the following phrase as a pre-screen:
 Please expand the medical acronyms in the following text without any commentary: XXXXXXXX
 E.g., Please expand the medical acronyms in the following text without any commentary: To support young investigators conducting clinical research studies in ALS.
 
