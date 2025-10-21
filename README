@@ -1,0 +1,17 @@
+conda activate 3.11
+conda install anaconda::medspacy_quickumls
+python -m spacy download en_core_web_sm
+
+python -m quickumls.server /path/to/quickumls/files
+
+http://localhost/umls.html
+
+
+Need to convert curly quotes into normal quotes!
+
+
+To get rid of acronyms, use OpenAI with the following phrase as a pre-screen:
+Please expand the medical acronyms in the following text without any commentary: XXXXXXXX
+E.g., Please expand the medical acronyms in the following text without any commentary: To support young investigators conducting clinical research studies in ALS.
+
+
